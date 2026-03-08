@@ -30,6 +30,9 @@ export const ENV = {
   // AI - Gemini
   geminiApiKey: optional("GEMINI_API_KEY"),
 
+  // AI - Stable Diffusion (Stability AI)
+  stabilityApiKey: optional("STABILITY_API_KEY"),
+
   // Storage - GCS
   gcsBucket: optional("GCS_BUCKET"),
   gcsProjectId: optional("GCS_PROJECT_ID"),
