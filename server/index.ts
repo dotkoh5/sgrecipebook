@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import { fileURLToPath } from "url";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "./routers";
 import { createContext } from "./_core/context";
@@ -27,7 +28,8 @@ app.use(
 
 // In local production mode, serve the built frontend
 if (!ENV.isDev && !process.env.VERCEL) {
-  const staticDir = path.resolve(import.meta.dirname, "public");
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const staticDir = path.resolve(__dirname, "public");
   app.use(express.static(staticDir));
   app.get("*", (_req, res) => {
     res.sendFile(path.join(staticDir, "index.html"));
