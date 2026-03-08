@@ -6,9 +6,22 @@ let storageClient: Storage | null = null;
 
 function getStorage(): Storage {
   if (!storageClient) {
-    storageClient = new Storage({
-      projectId: ENV.gcsProjectId || undefined,
-    });
+    // On Vercel: use GCS_SERVICE_ACCOUNT_KEY env var (base64-encoded JSON)
+    // Locally: falls back to GOOGLE_APPLICATION_CREDENTIALS file path
+    const serviceAccountKey = process.env.GCS_SERVICE_ACCOUNT_KEY;
+    if (serviceAccountKey) {
+      const credentials = JSON.parse(
+        Buffer.from(serviceAccountKey, "base64").toString("utf-8")
+      );
+      storageClient = new Storage({
+        projectId: ENV.gcsProjectId || credentials.project_id,
+        credentials,
+      });
+    } else {
+      storageClient = new Storage({
+        projectId: ENV.gcsProjectId || undefined,
+      });
+    }
   }
   return storageClient;
 }
