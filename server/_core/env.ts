@@ -1,4 +1,11 @@
-import "dotenv/config";
+// Only load dotenv in local development (Vercel injects env vars natively)
+if (!process.env.VERCEL) {
+  try {
+    await import("dotenv/config");
+  } catch {
+    // dotenv not available or no .env file — fine on production
+  }
+}
 
 function required(key: string): string {
   const value = process.env[key];
