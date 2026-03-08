@@ -123,16 +123,7 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold text-gray-900">—</div>
-              <p className="text-xs text-gray-500 mt-1">
-                <a 
-                  href="https://sgrecipebook.manus.space" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-red-600 hover:underline"
-                >
-                  View in Dashboard panel →
-                </a>
-              </p>
+              <p className="text-xs text-gray-500 mt-1">Coming soon</p>
             </CardContent>
           </Card>
         </div>
@@ -285,8 +276,7 @@ export default function Analytics() {
         <Card className="mt-8 bg-blue-50 border-blue-200">
           <CardContent className="py-4">
             <p className="text-sm text-blue-800">
-              <strong>Note:</strong> Page views and country data are available in the Manus Dashboard panel. 
-              Click the "Dashboard" button in the Management UI to view detailed analytics including UV/PV and geographic breakdown.
+              <strong>Note:</strong> Page views and geographic breakdown analytics will be available once an analytics provider is configured.
             </p>
           </CardContent>
         </Card>
