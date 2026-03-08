@@ -5,3 +5,4 @@ dist/
 .env.*.local
 .DS_Store
 *.log
+sgrecipebook-gcs-key.json

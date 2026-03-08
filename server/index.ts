@@ -25,8 +25,8 @@ app.use(
   })
 );
 
-// In production, serve the built frontend
-if (!ENV.isDev) {
+// In local production mode, serve the built frontend
+if (!ENV.isDev && !process.env.VERCEL) {
   const staticDir = path.resolve(import.meta.dirname, "public");
   app.use(express.static(staticDir));
   app.get("*", (_req, res) => {
@@ -34,8 +34,13 @@ if (!ENV.isDev) {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`[Server] Running on http://localhost:${PORT} (${ENV.nodeEnv})`);
-});
+// Only listen when running standalone (not on Vercel)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`[Server] Running on http://localhost:${PORT} (${ENV.nodeEnv})`);
+  });
+}
 
+// Export for Vercel serverless function
+export default app;
 export type { AppRouter } from "./routers";
