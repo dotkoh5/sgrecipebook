@@ -1,9 +1,9 @@
-// Only load dotenv in local development (Vercel injects env vars natively)
+// Load dotenv only in local dev — Vercel injects env vars natively
 if (!process.env.VERCEL) {
   try {
     await import("dotenv/config");
   } catch {
-    // dotenv not available or no .env file — fine on production
+    // No .env file or dotenv not available — fine in production
   }
 }
 
@@ -17,40 +17,72 @@ function optional(key: string, fallback = ""): string {
   return process.env[key] ?? fallback;
 }
 
+// All properties use lazy getters so nothing throws at module-load time.
+// This prevents Vercel's serverless function from crashing during initialization.
 export const ENV = {
   // Database
-  databaseUrl: required("DATABASE_URL"),
+  get databaseUrl() {
+    return required("DATABASE_URL");
+  },
 
   // JWT
-  jwtSecret: required("JWT_SECRET"),
+  get jwtSecret() {
+    return required("JWT_SECRET");
+  },
 
   // Google OAuth
-  googleClientId: optional("GOOGLE_CLIENT_ID"),
-  googleClientSecret: optional("GOOGLE_CLIENT_SECRET"),
+  get googleClientId() {
+    return optional("GOOGLE_CLIENT_ID");
+  },
+  get googleClientSecret() {
+    return optional("GOOGLE_CLIENT_SECRET");
+  },
 
   // Apple Sign-In
-  appleClientId: optional("APPLE_CLIENT_ID"),
-  appleTeamId: optional("APPLE_TEAM_ID"),
-  appleKeyId: optional("APPLE_KEY_ID"),
-  applePrivateKey: optional("APPLE_PRIVATE_KEY"),
+  get appleClientId() {
+    return optional("APPLE_CLIENT_ID");
+  },
+  get appleTeamId() {
+    return optional("APPLE_TEAM_ID");
+  },
+  get appleKeyId() {
+    return optional("APPLE_KEY_ID");
+  },
+  get applePrivateKey() {
+    return optional("APPLE_PRIVATE_KEY");
+  },
 
   // AI - Gemini
-  geminiApiKey: optional("GEMINI_API_KEY"),
+  get geminiApiKey() {
+    return optional("GEMINI_API_KEY");
+  },
 
   // AI - Stable Diffusion (Stability AI)
-  stabilityApiKey: optional("STABILITY_API_KEY"),
+  get stabilityApiKey() {
+    return optional("STABILITY_API_KEY");
+  },
 
   // Storage - GCS
-  gcsBucket: optional("GCS_BUCKET"),
-  gcsProjectId: optional("GCS_PROJECT_ID"),
+  get gcsBucket() {
+    return optional("GCS_BUCKET");
+  },
+  get gcsProjectId() {
+    return optional("GCS_PROJECT_ID");
+  },
 
   // App
-  appUrl: optional("APP_URL", "http://localhost:5173"),
-  ownerOpenId: optional("OWNER_OPEN_ID"),
+  get appUrl() {
+    return optional("APP_URL", "http://localhost:5173");
+  },
+  get ownerOpenId() {
+    return optional("OWNER_OPEN_ID");
+  },
 
   // Node
-  nodeEnv: optional("NODE_ENV", "development"),
+  get nodeEnv() {
+    return optional("NODE_ENV", "development");
+  },
   get isDev() {
     return this.nodeEnv === "development";
   },
-} as const;
+};
