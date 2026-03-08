@@ -43,8 +43,9 @@ authRouter.get("/callback/google", async (req: Request, res: Response) => {
 
     const tokens = await tokenRes.json();
     if (!tokens.access_token) {
-      console.error("[Auth] Google token exchange failed:", tokens);
-      res.status(401).send("Authentication failed");
+      const errorDetail = tokens.error_description || tokens.error || "unknown";
+      console.error("[Auth] Google token exchange failed:", JSON.stringify(tokens));
+      res.redirect(`/?auth_error=${encodeURIComponent(errorDetail)}`);
       return;
     }
 
@@ -93,7 +94,8 @@ authRouter.get("/callback/google", async (req: Request, res: Response) => {
     res.redirect(redirectTo);
   } catch (error) {
     console.error("[Auth] Google callback error:", error);
-    res.status(500).send("Authentication failed");
+    const message = error instanceof Error ? error.message : "Unknown error";
+    res.redirect(`/?auth_error=${encodeURIComponent(message)}`);
   }
 });
 

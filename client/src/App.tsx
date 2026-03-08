@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
+import { toast } from "sonner";
 import ErrorBoundary from "./components/ErrorBoundary";
 import NewUserRedirect from "./components/NewUserRedirect";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -43,12 +45,29 @@ function Router() {
   );
 }
 
+// Show auth errors from OAuth redirects (e.g. /?auth_error=redirect_uri_mismatch)
+function AuthErrorHandler() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const authError = params.get("auth_error");
+    if (authError) {
+      toast.error(`Login failed: ${authError}`, { duration: 10000 });
+      // Clean the URL without reloading
+      const url = new URL(window.location.href);
+      url.searchParams.delete("auth_error");
+      window.history.replaceState({}, "", url.pathname);
+    }
+  }, []);
+  return null;
+}
+
 function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
+          <AuthErrorHandler />
           <NewUserRedirect />
           <Router />
         </TooltipProvider>
