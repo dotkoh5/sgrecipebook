@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { jwtVerify } from "jose";
 import cookie from "cookie";
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME } from "../../shared/const";
 import { ENV } from "./env";
 import * as db from "../db";
 

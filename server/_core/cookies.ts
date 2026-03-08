@@ -1,5 +1,5 @@
 import type { Request } from "express";
-import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "../../shared/const";
 
 export function getSessionCookieOptions(_req?: Request) {
   const isProduction = process.env.NODE_ENV === "production";

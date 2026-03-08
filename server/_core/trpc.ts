@@ -1,7 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import type { Context } from "./context";
-import { UNAUTHED_ERR_MSG } from "@shared/const";
+import { UNAUTHED_ERR_MSG } from "../../shared/const";
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
