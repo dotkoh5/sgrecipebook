@@ -4,10 +4,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import { trpc } from "@/lib/trpc";
-import { 
-  Heart, MessageCircle, Clock, Users, ArrowLeft, 
+import {
+  Heart, MessageCircle, Clock, Users, ArrowLeft,
   Share2, UserPlus, UserMinus, Send, Loader2,
-  Printer, Star, Eye, EyeOff, Copy, Check, Pencil, X, ImagePlus
+  Printer, Star, Eye, EyeOff, Copy, Check, Pencil, X, ImagePlus, Trash2, Plus
 } from "lucide-react";
 import { Link, useParams } from "wouter";
 import { getLoginUrl } from "@/const";
@@ -118,10 +118,13 @@ export default function RecipeDetail() {
 
   const handleSaveEdit = () => {
     if (!recipe) return;
+    // Filter out empty entries before saving
+    const cleanIngredients = editedIngredients.filter(i => i.trim());
+    const cleanInstructions = editedInstructions.filter(i => i.trim());
     updateMutation.mutate({
       id: recipe.id,
-      ingredients: editedIngredients,
-      instructions: editedInstructions,
+      ingredients: cleanIngredients.length > 0 ? cleanIngredients : editedIngredients,
+      instructions: cleanInstructions.length > 0 ? cleanInstructions : editedInstructions,
     });
   };
 
@@ -621,12 +624,45 @@ export default function RecipeDetail() {
                 )}
                 
                 {isEditMode ? (
-                  <Textarea
-                    value={editedInstructions.join('\n')}
-                    onChange={(e) => setEditedInstructions(e.target.value.split('\n'))}
-                    className="min-h-[500px] text-sm font-mono bg-white"
-                    placeholder="Enter instructions, one step per line..."
-                  />
+                  <div className="space-y-3">
+                    {editedInstructions.map((instruction, index) => (
+                      <div key={index} className="flex gap-3 group">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-semibold flex items-center justify-center mt-1">
+                          {index + 1}
+                        </div>
+                        <Textarea
+                          value={instruction}
+                          onChange={(e) => {
+                            const newInstructions = [...editedInstructions];
+                            newInstructions[index] = e.target.value;
+                            setEditedInstructions(newInstructions);
+                          }}
+                          className="flex-1 min-h-[60px] text-sm leading-relaxed resize-y"
+                          placeholder={`Step ${index + 1}...`}
+                        />
+                        {editedInstructions.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditedInstructions(editedInstructions.filter((_, i) => i !== index));
+                            }}
+                            className="flex-shrink-0 w-7 h-7 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100 mt-1"
+                            title="Remove step"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setEditedInstructions([...editedInstructions, ''])}
+                      className="flex items-center gap-1 text-sm text-primary hover:text-primary/80 transition-colors ml-11"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add step
+                    </button>
+                  </div>
                 ) : (
                   <ol className="space-y-6">
                     {recipe.instructions.map((instruction, index) => (
