@@ -788,7 +788,7 @@ export default function SubmitRecipe() {
                                 const newInstructions = editedRecipe.instructions.filter((_, i) => i !== index);
                                 setEditedRecipe({ ...editedRecipe, instructions: newInstructions });
                               }}
-                              className="flex-shrink-0 w-7 h-7 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                              className="flex-shrink-0 w-7 h-7 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors"
                               title="Remove step"
                             >
                               <Trash2 className="w-4 h-4" />
