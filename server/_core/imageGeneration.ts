@@ -43,7 +43,7 @@ export async function generateImage(
   if (!response.ok) {
     const errorText = await response.text();
     console.error("[ImageGen] Stability API error:", response.status, errorText);
-    throw new Error(`Stability API error: ${response.status} ${response.statusText}`);
+    throw new Error(`Stability API ${response.status}: ${errorText.substring(0, 300)}`);
   }
 
   // Response is raw image bytes
