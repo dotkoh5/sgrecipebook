@@ -38,11 +38,12 @@ app.get("/api/test-image", async (_req, res) => {
     const result = await generateImage({
       prompt: "Professional food photography of chicken rice, warm lighting",
     });
-    res.json({ success: true, url: result.url?.substring(0, 120) });
+    const isGcs = result.url?.startsWith("https://storage.googleapis.com");
+    const isBase64 = result.url?.startsWith("data:");
+    res.json({ success: true, storage: isGcs ? "gcs" : isBase64 ? "base64-fallback" : "unknown", urlPreview: result.url?.substring(0, 120) });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    const stack = error instanceof Error ? error.stack?.split('\n').slice(0, 3) : [];
-    res.status(500).json({ success: false, error: message, stack });
+    res.status(500).json({ success: false, error: message });
   }
 });
 

@@ -54,8 +54,8 @@ export async function generateImage(
   try {
     const stored = await storagePut(imageKey, imageBuffer, "image/webp");
     return { url: stored.url };
-  } catch {
-    // GCS not configured yet — return base64 data URL as fallback
+  } catch (gcsError) {
+    console.error("[ImageGen] GCS upload failed, using base64 fallback:", gcsError instanceof Error ? gcsError.message : gcsError);
     const base64 = imageBuffer.toString("base64");
     return { url: `data:image/webp;base64,${base64}` };
   }
