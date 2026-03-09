@@ -29,7 +29,7 @@ export async function generateImage(
   const formData = new FormData();
   formData.append("prompt", options.prompt);
   formData.append("output_format", "webp");
-  formData.append("aspect_ratio", "4:3"); // Good for food photos
+  formData.append("aspect_ratio", "3:2"); // Closest to 4:3 from valid options
 
   const response = await fetch(url, {
     method: "POST",
