@@ -31,6 +31,21 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+// Image generation test — diagnose Stability API + GCS on Vercel
+app.get("/api/test-image", async (_req, res) => {
+  try {
+    const { generateImage } = await import("./_core/imageGeneration");
+    const result = await generateImage({
+      prompt: "Professional food photography of chicken rice, warm lighting",
+    });
+    res.json({ success: true, url: result.url?.substring(0, 120) });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const stack = error instanceof Error ? error.stack?.split('\n').slice(0, 3) : [];
+    res.status(500).json({ success: false, error: message, stack });
+  }
+});
+
 // Auth routes (OAuth callbacks)
 app.use("/api/auth", authRouter);
 
