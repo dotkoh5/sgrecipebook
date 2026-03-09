@@ -22,6 +22,9 @@ app.get("/api/health", (_req, res) => {
     env: {
       hasDbUrl: !!process.env.DATABASE_URL,
       hasJwt: !!process.env.JWT_SECRET,
+      hasStabilityKey: !!process.env.STABILITY_API_KEY,
+      hasGcsBucket: !!process.env.GCS_BUCKET,
+      hasGcsServiceKey: !!process.env.GCS_SERVICE_ACCOUNT_KEY,
       nodeEnv: process.env.NODE_ENV,
       vercel: !!process.env.VERCEL,
     },
