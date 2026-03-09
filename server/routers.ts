@@ -553,18 +553,22 @@ RULES:
         
         // Generate AI image for the recipe if no image provided
         let imageUrl = input.imageUrl;
+        let imageError: string | null = null;
         if (!imageUrl) {
           try {
             const cuisineContext = input.cuisineType ? `${input.cuisineType} ` : 'Singaporean ';
             const prompt = `Professional food photography of ${cuisineContext}${input.title}, home-cooked style, appetizing presentation on a plate, warm lighting, shallow depth of field, top-down angle, clean background`;
+            console.log('[RecipeCreate] Generating image for:', input.title);
             const result = await generateImage({ prompt });
             imageUrl = result.url;
+            console.log('[RecipeCreate] Image generated:', imageUrl?.substring(0, 80));
           } catch (error) {
-            console.error('Failed to generate recipe image:', error);
+            imageError = error instanceof Error ? error.message : String(error);
+            console.error('[RecipeCreate] Image generation failed:', imageError);
             // Continue without image if generation fails
           }
         }
-        
+
         const recipeId = await db.createRecipe({
           ...input,
           imageUrl,
@@ -574,13 +578,13 @@ RULES:
           isPublished: true,
           isSeeded: false,
         });
-        
+
         // Mark onboarding as complete after first recipe submission
         if (!ctx.user.hasCompletedOnboarding) {
           await db.markOnboardingComplete(ctx.user.id);
         }
-        
-        return { id: recipeId, slug, shortCode };
+
+        return { id: recipeId, slug, shortCode, imageError };
       }),
 
     // Update recipe (owner only)
