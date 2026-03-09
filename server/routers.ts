@@ -310,24 +310,63 @@ Given:
 - A list of instructions (possibly fragmented or written as continuous text)
 
 Produce a tidied version that:
-1. Groups related ingredients together with section headers (e.g. "For the Chicken:", "For the Rice:", "For the Sauce:") when the recipe clearly has distinct components
-2. Combines fragmented instruction sentences into coherent numbered steps
-3. Keeps the original cooking order and meaning
-4. Preserves informal quantities (e.g. "some", "agak agak", brand names)
-5. Uses simple, home-style language
+1. Groups related ingredients with section headers when the recipe has distinct components (paste, sauce, main dish, garnish, etc.)
+2. Standardises each ingredient line into a clean format
+3. Combines fragmented instruction sentences into coherent numbered steps
+4. Keeps the original cooking order and meaning
+5. Preserves informal quantities (e.g. "some", "agak agak") and brand names exactly
+6. Uses simple, home-style language
 
-INGREDIENT FORMATTING:
-- Group ingredients by component when the recipe has multiple parts (e.g. chicken rice has chicken ingredients and rice ingredients)
-- Use section headers like "For the Chicken:" or "For the Rice:" followed by the ingredients for that component
-- Keep all ingredients for one component together
-- Preserve original quantities exactly
+INGREDIENT FORMATTING — CRITICAL:
+Each ingredient line must follow this format:
+  "{quantity} {ingredient} ({preparation if any})"
+Examples:
+  "20 cloves garlic"
+  "10 small onions"
+  "1 ginger (sliced and juiced)"
+  "6–8 large potatoes (peeled and halved)"
+  "1 whole chicken (broken down into thighs, breast, and wings)"
+  "1 tbsp Kikkoman light soy sauce"
+  "1 packet fresh coconut milk"
+  "Olive oil (for frying)"
 
-INSTRUCTION FORMATTING - CRITICAL:
+SECTION HEADERS for ingredient groups:
+- MUST start with "For the " and end with ":"
+- MUST be on their own line, separate from any ingredient
+- NEVER combine a section header with an ingredient on the same line
+- Use headers when the recipe has clearly distinct components (e.g. a paste/rempah, a sauce, a main protein, a garnish)
+Examples of CORRECT headers:
+  "For the Curry Paste:"
+  "For the Curry:"
+  "For the Garnish:"
+  "For the Rice:"
+  "For the Broth:"
+  "For the Sambal:"
+
+BAD — DO NOT do this:
+  "Curry Paste – 20 cloves garlic"  ← header merged with ingredient!
+  "Curry – 1 ginger"               ← header merged with ingredient!
+
+GOOD:
+  "For the Curry Paste:"
+  "20 cloves garlic"
+  "10 small onions"
+  "3 stalks lemongrass"
+  "1 ginger (sliced and juiced)"
+  "For the Curry:"
+  "6–8 large potatoes (peeled and halved)"
+  "1 whole chicken (broken down into thighs, breast, and wings)"
+
+LINE RECOMBINATION for ingredients:
+When input has fragmented lines (e.g. "breast" or "and wings" alone), merge them into the preceding ingredient.
+E.g. "1 chicken (broken down into thighs\nbreast\nand wings)" → "1 whole chicken (broken down into thighs, breast, and wings)"
+
+INSTRUCTION FORMATTING — CRITICAL:
 - Combine related sentences into coherent PARAGRAPHS, not individual sentences
 - Each instruction array item should be a COMPLETE STEP that may contain multiple sentences
 - Group sentences that describe the same cooking action together
-- A step like "making the chicken" should be ONE array item with multiple sentences explaining the full process
-- Aim for 5-15 instruction steps total, not 20-50 fragmented lines
+- A step like "making the curry paste" should be ONE array item with multiple sentences explaining the full process
+- Aim for 5–12 instruction steps total, NOT 20–50 fragmented lines
 - Each step should describe a meaningful cooking milestone
 
 EXAMPLE of good instruction formatting:
@@ -335,10 +374,7 @@ BAD (too fragmented):
 ["Wash the chicken.", "Remember to set aside the fat.", "Transfer to a plate.", "Pat dry with paper towel."]
 
 GOOD (coherent steps):
-["Wash the chicken clean and remember to set aside the piece of chicken fat from the cavity. Transfer the chicken to a plate and pat dry with a paper towel."]
-
-LINE RECOMBINATION:
-When input lines appear fragmented (single words like "breast" or "wings" on their own lines), merge them into the preceding ingredient or step.
+["Wash the chicken and set aside the chicken fat from the cavity. Transfer to a plate and pat dry with a paper towel."]
 
 INPUT:
 
@@ -355,7 +391,7 @@ ${input.tips ? `Tips: ${input.tips}` : ''}
 OUTPUT FORMAT:
 {
   "title": "...",
-  "description": "a brief 1-2 sentence description",
+  "description": "a brief 1-2 sentence description of this dish",
   "meta": {
     "prep_minutes": null,
     "cook_minutes": null,
@@ -365,16 +401,25 @@ OUTPUT FORMAT:
     "difficulty": "easy or medium or hard"
   },
   "ingredients": [
-    "For the Chicken:",
-    "1 small chicken (3-3½ pounds)",
-    "1 tablespoon salt",
-    "For the Rice:",
-    "3 cups rice",
-    "..."
+    "For the Curry Paste:",
+    "20 cloves garlic",
+    "10 small onions",
+    "3 stalks lemongrass",
+    "1 ginger (sliced and juiced)",
+    "For the Curry:",
+    "6–8 large potatoes (peeled and halved)",
+    "1 whole chicken (broken down into thighs, breast, and wings)",
+    "Curry powder (or Prima Paste)",
+    "1 tbsp Kikkoman light soy sauce",
+    "1 tbsp tamari soy sauce",
+    "1 packet fresh coconut milk",
+    "2 tomatoes (quartered)",
+    "200 ml water",
+    "Olive oil (for frying)"
   ],
   "instructions": [
-    "Wash the chicken clean and remember to set aside the piece of chicken fat from the cavity. Transfer the chicken to a plate and pat dry with a paper towel. Lightly rub the chicken with the salt to give the skin a nice sheen. Set it aside.",
-    "Bring the water, along with the ginger and scallions, to a boil in a large stockpot. Carefully lower the chicken into the boiling water, positioning the chicken breast-side up.",
+    "Prepare the curry paste by blending the garlic, onions, lemongrass, and ginger together until smooth. Set aside.",
+    "Heat olive oil in a large pot over medium heat. Fry the curry paste until fragrant and the oil separates, about 5–8 minutes.",
     "..."
   ],
   "tips": "...",
@@ -382,10 +427,11 @@ OUTPUT FORMAT:
 }
 
 RULES:
-- Each ingredient must be a single complete string (or a section header like "For the Chicken:")
+- Section headers MUST start with "For the " and end with ":" — never merge with an ingredient
+- Each ingredient must be a single clean line with quantity, item, and preparation
 - Each instruction must be a COMPLETE STEP with multiple sentences describing that cooking phase
-- Aim for 5-15 instruction steps, NOT 20-50 fragmented sentences
-- Do not add, remove, or infer any content
+- Aim for 5–12 instruction steps, NOT 20–50 fragmented sentences
+- Do not add, remove, or infer any content — only reorganise and reformat
 - Output JSON only. No explanation.`;
 
         try {

@@ -537,8 +537,8 @@ export default function RecipeDetail() {
                           let currentGroup: { header: string | null; items: string[] } = { header: null, items: [] };
                           
                           recipe.ingredients.forEach((ingredient) => {
-                            // Check if this is a section header (e.g., "For the Chicken:", "For the Broth Base:")
-                            const isHeader = /^(For |To |The )/i.test(ingredient) && ingredient.endsWith(':');
+                            // Check if this is a section header (e.g., "For the Chicken:", "Curry Paste:", "Garnish:")
+                            const isHeader = ingredient.endsWith(':') && !ingredient.includes(',') && ingredient.length < 60;
                             
                             if (isHeader) {
                               if (currentGroup.items.length > 0 || currentGroup.header) {

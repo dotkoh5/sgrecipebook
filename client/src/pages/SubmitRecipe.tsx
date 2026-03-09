@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowLeft, ArrowRight, ChefHat, Sparkles, Check, Share2, BookOpen, Loader2, Eye, EyeOff, Search, Menu, X, Plus, Lock, Pencil, Lightbulb, ChevronDown, ChevronUp, Copy, MessageCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChefHat, Sparkles, Check, Share2, BookOpen, Loader2, Eye, EyeOff, Search, Menu, X, Plus, Lock, Pencil, Lightbulb, ChevronDown, ChevronUp, Copy, MessageCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 // 6-step onboarding flow
@@ -767,7 +767,7 @@ export default function SubmitRecipe() {
                     <div className="text-xs uppercase tracking-wide text-gray-400 mb-2">Instructions</div>
                     <div className="border rounded-lg p-3 bg-white space-y-3">
                       {editedRecipe.instructions.map((instruction, index) => (
-                        <div key={index} className="flex gap-3">
+                        <div key={index} className="flex gap-3 group">
                           <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary text-sm font-semibold flex items-center justify-center">
                             {index + 1}
                           </div>
@@ -781,6 +781,19 @@ export default function SubmitRecipe() {
                             className="flex-1 min-h-[60px] border rounded-lg p-2 text-sm leading-relaxed resize-y focus-visible:ring-primary"
                             placeholder={`Step ${index + 1}...`}
                           />
+                          {editedRecipe.instructions.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newInstructions = editedRecipe.instructions.filter((_, i) => i !== index);
+                                setEditedRecipe({ ...editedRecipe, instructions: newInstructions });
+                              }}
+                              className="flex-shrink-0 w-7 h-7 rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                              title="Remove step"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       ))}
                       <button
